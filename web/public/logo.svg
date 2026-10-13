@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240" width="100%" height="100%">
+  <!-- IPI - International Pharmaceuticals, Inc. Official Brand Vector Logo -->
+  <!-- Left Green Leaf -->
+  <polygon points="25,16 100,78 100,154 25,92" fill="#44B330" />
+
+  <!-- Right Green Leaf -->
+  <polygon points="114,78 189,16 189,92 114,154" fill="#44B330" />
+
+  <!-- Left Navy Base with rounded bottom-left corner -->
+  <path d="M 25,108 L 100,170 V 186 H 41 A 16,16 0 0 1 25,170 Z" fill="#002F87" />
+
+  <!-- Right Navy Base with rounded bottom-right corner -->
+  <path d="M 114,170 L 189,108 V 170 A 16,16 0 0 1 173,186 H 114 Z" fill="#002F87" />
+
+  <!-- Wordmark: IPI -->
+  <!-- Letter I -->
+  <rect x="236" y="62" width="36" height="96" fill="#002F87" rx="1" />
+
+  <!-- Letter P -->
+  <path d="M 300,62 H 368 C 392,62 406,73 406,94 C 406,115 392,126 368,126 H 336 V 158 H 300 Z M 336,83 V 105 H 364 C 374,105 380,101 380,94 C 380,87 374,83 364,83 Z" fill="#002F87" />
+
+  <!-- Letter I -->
+  <rect x="432" y="62" width="36" height="96" fill="#002F87" rx="1" />
+
+  <!-- Slogan: Your Wellness. Our Passion. -->
+  <text x="245" y="218" text-anchor="middle" font-family="'Times New Roman', Georgia, 'Playfair Display', serif" font-size="28" font-style="italic" font-weight="700" fill="#002F87" letter-spacing="0.5">Your Wellness. Our Passion.</text>
+</svg>

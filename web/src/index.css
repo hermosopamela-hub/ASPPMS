@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --ipi-primary: #002F87;
+    --ipi-primary-hover: #00246B;
+    --ipi-primary-light: #EFF4FC;
+    --ipi-primary-border: #C8DBFC;
+    
+    --ipi-secondary: #44B330;
+    --ipi-secondary-hover: #369924;
+    --ipi-secondary-light: #F0FDF4;
+    --ipi-secondary-border: #BBF7D0;
+    
+    --surface-canvas: #F8FAFC;
+    --surface-card: #FFFFFF;
+    --surface-border: #E2E8F0;
+    
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+  }
+}
+
+/* Custom IPI Brand Utility Classes */
+.bg-ipi-blue {
+  background-color: #002F87;
+}
+
+.bg-ipi-blue-hover:hover {
+  background-color: #00246B;
+}
+
+.bg-ipi-blue-light {
+  background-color: #EFF4FC;
+}
+
+.text-ipi-blue {
+  color: #002F87;
+}
+
+.border-ipi-blue {
+  border-color: #002F87;
+}
+
+.bg-ipi-green {
+  background-color: #44B330;
+}
+
+.bg-ipi-green-hover:hover {
+  background-color: #369924;
+}
+
+.bg-ipi-green-light {
+  background-color: #F0FDF4;
+}
+
+.text-ipi-green {
+  color: #44B330;
+}
+
+.text-ipi-green-dark {
+  color: #28781A;
+}
+
+.border-ipi-green {
+  border-color: #44B330;
+}
+
+@media print {
+  header, aside, nav, button, select, input, .no-print {
+    display: none !important;
+  }
+  body, main {
+    background: white !important;
+    color: #0f172a !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}

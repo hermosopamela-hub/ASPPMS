@@ -1,0 +1,12 @@
+# Never put internal data or secrets in the image
+data/
+.env
+.env.*
+!.env.example
+
+node_modules/
+.git/
+docs/
+*.log
+cloud-sql-proxy*
+dist/

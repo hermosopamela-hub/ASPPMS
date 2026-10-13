@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Field names match the JSON the browser app already uses (camelCase); columns are snake_case.
+
+model User {
+  id                 String    @id // "uid" in the browser app, e.g. usr-mgr-01
+  email              String    @unique
+  displayName        String    @map("display_name")
+  role               String // PURCHASING_MANAGER | PURCHASING_ASSISTANT_MANAGER | PURCHASING_ANALYST | ADMIN
+  status             String    @default("ACTIVE") // ACTIVE | INACTIVE | SUSPENDED
+  department         String    @default("")
+  avatarUrl          String?   @map("avatar_url")
+  passwordHash       String    @map("password_hash")
+  mustChangePassword Boolean   @default(true) @map("must_change_password")
+  failedAttempts     Int       @default(0) @map("failed_attempts")
+  lockedUntil        DateTime? @map("locked_until") @db.Timestamptz(6)
+  passwordChangedAt  DateTime  @default(now()) @map("password_changed_at") @db.Timestamptz(6)
+  lastLoginAt        DateTime? @map("last_login_at") @db.Timestamptz(6)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("users")
+}
+
+model Supplier {
+  id                  String    @id
+  supplierCode        String    @unique @map("supplier_code")
+  supplierName        String    @map("supplier_name")
+  supplierType        String    @map("supplier_type") // Manufacturer | Distributor | Service Provider | Importer
+  category            String
+  contactPerson       String    @default("") @map("contact_person")
+  email               String    @default("")
+  phone               String    @default("")
+  address             String    @default("")
+  country             String    @default("")
+  region              String    @default("")
+  status              String    @default("ACTIVE") // ACTIVE | INACTIVE | PROBATION | SUSPENDED
+  paymentTerms        String    @default("Net 30") @map("payment_terms")
+  leadTimeDays        Int       @default(7) @map("lead_time_days")
+  contractStartDate   DateTime? @map("contract_start_date") @db.Date
+  contractEndDate     DateTime? @map("contract_end_date") @db.Date
+  overallScore        Float     @default(0) @map("overall_score")
+  ratingTier          String    @default("SATISFACTORY") @map("rating_tier")
+  deliveryScore       Float     @default(0) @map("delivery_score")
+  qualityScore        Float     @default(0) @map("quality_score")
+  priceScore          Float     @default(0) @map("price_score")
+  responsivenessScore Float     @default(85) @map("responsiveness_score")
+  complianceScore     Float     @default(90) @map("compliance_score")
+  totalOrdersCount    Int       @default(0) @map("total_orders_count")
+  totalSpend          Decimal   @default(0) @map("total_spend") @db.Decimal(16, 2)
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  purchases    PurchaseTransaction[]
+  priceHistory PriceHistory[]
+  alerts       Alert[]
+  preferredFor Material[]
+
+  @@index([status])
+  @@map("suppliers")
+}
+
+model Material {
+  id                    String   @id
+  materialCode          String   @unique @map("material_code")
+  materialName          String   @map("material_name")
+  description           String   @default("")
+  category              String
+  subcategory           String   @default("")
+  uom                   String
+  standardPrice         Decimal  @map("standard_price") @db.Decimal(14, 2)
+  currentPrice          Decimal  @map("current_price") @db.Decimal(14, 2)
+  previousPrice         Decimal  @default(0) @map("previous_price") @db.Decimal(14, 2)
+  priceChangePct        Float    @default(0) @map("price_change_pct")
+  currency              String   @default("PHP")
+  preferredSupplierId   String?  @map("preferred_supplier_id")
+  preferredSupplierName String   @default("") @map("preferred_supplier_name")
+  isActive              Boolean  @default(true) @map("is_active")
+  minOrderQty           Int      @default(1) @map("min_order_qty")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  preferredSupplier Supplier?             @relation(fields: [preferredSupplierId], references: [id], onDelete: SetNull)
+  purchases         PurchaseTransaction[]
+  priceHistory      PriceHistory[]
+  alerts            Alert[]
+
+  @@index([category])
+  @@map("materials")
+}
+
+model PurchaseTransaction {
+  id                    String    @id
+  poNumber              String    @unique @map("po_number")
+  poDate                DateTime  @map("po_date") @db.Date
+  supplierId            String    @map("supplier_id")
+  supplierName          String    @map("supplier_name")
+  materialId            String    @map("material_id")
+  materialCode          String    @map("material_code")
+  materialName          String    @map("material_name")
+  quantity              Decimal   @db.Decimal(14, 2)
+  unitPrice             Decimal   @map("unit_price") @db.Decimal(14, 2)
+  currency              String    @default("PHP")
+  totalAmount           Decimal   @map("total_amount") @db.Decimal(16, 2)
+  requestedDeliveryDate DateTime  @map("requested_delivery_date") @db.Date
+  actualDeliveryDate    DateTime? @map("actual_delivery_date") @db.Date
+  deliveryStatus        String    @default("PENDING") @map("delivery_status") // ON_TIME | DELAYED | EARLY | PENDING | CANCELLED
+  delayDays             Int       @default(0) @map("delay_days")
+  qualityStatus         String    @default("PENDING") @map("quality_status") // ACCEPTED | REJECTED | PARTIAL | INSPECTING | PENDING
+  receivedQuantity      Decimal   @default(0) @map("received_quantity") @db.Decimal(14, 2)
+  acceptedQuantity      Decimal   @default(0) @map("accepted_quantity") @db.Decimal(14, 2)
+  rejectedQuantity      Decimal   @default(0) @map("rejected_quantity") @db.Decimal(14, 2)
+  rejectionRate         Float     @default(0) @map("rejection_rate")
+  buyerStaff            String    @default("") @map("buyer_staff")
+  receivingDate         DateTime? @map("receiving_date") @db.Date
+  remarks               String    @default("")
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  material Material @relation(fields: [materialId], references: [id], onDelete: Restrict)
+
+  @@index([supplierId, poDate])
+  @@index([materialId, poDate])
+  @@index([poDate])
+  @@map("purchase_transactions")
+}
+
+model PriceHistory {
+  id             String   @id
+  materialId     String   @map("material_id")
+  materialCode   String   @map("material_code")
+  materialName   String   @map("material_name")
+  supplierId     String   @map("supplier_id")
+  supplierName   String   @map("supplier_name")
+  poNumber       String   @map("po_number")
+  recordedDate   DateTime @map("recorded_date") @db.Date
+  price          Decimal  @db.Decimal(14, 2)
+  previousPrice  Decimal  @map("previous_price") @db.Decimal(14, 2)
+  priceDiff      Decimal  @map("price_diff") @db.Decimal(14, 2)
+  priceChangePct Float    @map("price_change_pct")
+  currency       String   @default("PHP")
+  classification String
+  uom            String   @default("Unit")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([materialId, recordedDate])
+  @@index([supplierId])
+  @@index([poNumber])
+  @@map("price_history")
+}
+
+model Alert {
+  id            String    @id
+  alertType     String    @map("alert_type")
+  severity      String // CRITICAL | HIGH | MEDIUM | LOW
+  supplierId    String?   @map("supplier_id")
+  supplierName  String?   @map("supplier_name")
+  materialId    String?   @map("material_id")
+  materialName  String?   @map("material_name")
+  description   String
+  triggerMetric String?   @map("trigger_metric")
+  status        String    @default("NEW") // NEW | ACKNOWLEDGED | INVESTIGATING | RESOLVED | DISMISSED
+  assignedUser  String?   @map("assigned_user")
+  resolution    String?
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  resolvedAt    DateTime? @map("resolved_at") @db.Timestamptz(6)
+
+  supplier Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  material Material? @relation(fields: [materialId], references: [id], onDelete: SetNull)
+
+  @@index([status, severity])
+  @@index([createdAt])
+  @@map("alerts")
+}
+
+model DataImport {
+  id           String   @id
+  datasetType  String   @map("dataset_type")
+  fileName     String   @map("file_name")
+  totalRows    Int      @map("total_rows")
+  validRows    Int      @map("valid_rows")
+  importedRows Int      @map("imported_rows")
+  errorRows    Int      @map("error_rows")
+  status       String // COMPLETED | FAILED | PARTIAL
+  importedBy   String   @map("imported_by")
+  errors       Json?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([createdAt])
+  @@map("data_imports")
+}
+
+model AuditLog {
+  id        String   @id
+  userId    String   @map("user_id")
+  userEmail String   @map("user_email")
+  action    String // CREATE | UPDATE | DELETE | IMPORT | RESOLVE_ALERT | UPDATE_SETTINGS | LOGIN
+  module    String
+  recordId  String   @map("record_id")
+  details   String
+  ipAddress String?  @map("ip_address")
+  timestamp DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([timestamp])
+  @@index([module])
+  @@map("audit_logs")
+}
+
+// One row (id = 1): scoring weights, alert thresholds and company details.
+model SystemSetting {
+  id           Int      @id @default(1)
+  companyName  String   @map("company_name")
+  baseCurrency String   @map("base_currency")
+  fiscalYear   String   @map("fiscal_year")
+  weights      Json
+  thresholds   Json
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_settings")
+}

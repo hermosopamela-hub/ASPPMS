@@ -1,0 +1,61 @@
+# Deploys ASPPM to Cloud Run. For now this is started by hand: Actions tab -> Deploy -> Run workflow.
+# UAT (on a pre-release) and Prod (by hand, with a tag) will be added here when those environments exist.
+#
+# The deploy changes only the code. The service keeps the settings it already has (Cloud SQL
+# connection, secrets, memory), so nothing here needs a password.
+#
+# Setup (repository variables, Settings -> Secrets and variables -> Actions -> Variables):
+#   GCP_PROJECT_ID, GCP_REGION      shared by every environment
+#   SIT_SERVICE                     Cloud Run service name for SIT
+#   SIT_WIF_PROVIDER                Workload Identity provider, projects/NUMBER/locations/global/workloadIdentityPools/POOL/providers/PROVIDER
+#   SIT_DEPLOY_SA                   service account the job acts as, NAME@PROJECT.iam.gserviceaccount.com
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to deploy
+        type: choice
+        options: [sit]
+        default: sit
+
+permissions:
+  contents: read
+  id-token: write # lets the job ask Google for short-lived access, so no key file is stored
+
+# One deploy per environment at a time
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Sign in to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.SIT_WIF_PROVIDER }}
+          service_account: ${{ vars.SIT_DEPLOY_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and deploy to Cloud Run
+        run: |
+          gcloud run deploy "${{ vars.SIT_SERVICE }}" \
+            --source . \
+            --project "${{ vars.GCP_PROJECT_ID }}" \
+            --region "${{ vars.GCP_REGION }}" \
+            --quiet
+
+      - name: Show the address
+        run: |
+          gcloud run services describe "${{ vars.SIT_SERVICE }}" \
+            --project "${{ vars.GCP_PROJECT_ID }}" \
+            --region "${{ vars.GCP_REGION }}" \
+            --format "value(status.url)"

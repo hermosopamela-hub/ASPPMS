@@ -1,0 +1,18 @@
+node_modules/
+.env
+.env.*
+!.env.example
+npm-debug.log*
+*.log
+.DS_Store
+cloud-sql-proxy*
+
+# Built browser app (npm run build)
+dist/
+coverage/
+
+# Editors and tools
+.vscode/
+.idea/
+.claude/
+*.tsbuildinfo

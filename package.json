@@ -1,0 +1,54 @@
+{
+  "name": "asppm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ASPPM: React + Express + Prisma + PostgreSQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --env-file=.env --watch server.js",
+    "setup": "node scripts/setup.js",
+    "setup:env": "node scripts/setup_env.js",
+    "setup:db": "node scripts/setup_db.js",
+    "secret": "node scripts/setup_env.js --secret-only",
+    "migrate": "node scripts/migrate.js",
+    "seed:demo": "node scripts/seed_demo.js",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:diff": "prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script",
+    "db:status": "prisma migrate status",
+    "build": "vite build",
+    "web": "vite",
+    "lint": "tsc --noEmit",
+    "test": "node --test \"server/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "express": "^4.21.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "pg": "^8.13.1",
+    "prisma": "^7.10.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^22.14.0",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "esbuild": "^0.28.0",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "papaparse": "^5.7.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.0",
+    "vite": "^8.3.0"
+  }
+}

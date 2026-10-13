@@ -1,0 +1,13 @@
+# What `gcloud ... --source .` uploads to Google Cloud for the build.
+# Internal data and secrets must never be in the upload.
+.git
+.gitignore
+data/
+.env
+.env.*
+!.env.example
+node_modules/
+docs/
+cloud-sql-proxy*
+*.log
+dist/
