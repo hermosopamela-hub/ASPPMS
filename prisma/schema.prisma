@@ -226,3 +226,45 @@ model SystemSetting {
 
   @@map("system_settings")
 }
+
+model ErpPurchaseOrder {
+  id                      String    @id
+  erpLegacyPo             String?   @map("erp_legacy_po")
+  purchasingDocument      String    @map("purchasing_document")
+  taxCode                 String?   @map("tax_code")
+  grossUnitPrice          Decimal?  @map("gross_unit_price") @db.Decimal(14, 2)
+  netPrice                Decimal?  @map("net_price") @db.Decimal(14, 2)
+  materialCode            String?   @map("material_code")
+  orderQuantity           Decimal?  @map("order_quantity") @db.Decimal(14, 2)
+  orderUnit               String?   @map("order_unit")
+  purchasingDocType       String?   @map("purchasing_doc_type")
+  purchOrganization       String?   @map("purch_organization")
+  itemCategory            String?   @map("item_category")
+  item                    Int       @map("item")
+  purchDocCategory        String?   @map("purch_doc_category")
+  purchasingGroup         String?   @map("purchasing_group")
+  documentDate            DateTime? @map("document_date") @db.Date
+  supplierText            String?   @map("supplier_text")
+  shortText               String?   @map("short_text")
+  materialGroup           String?   @map("material_group")
+  acctAssignmentCat       String?   @map("acct_assignment_cat")
+  plant                   String?   @map("plant")
+  storageLocation         String?   @map("storage_location")
+  quantityInSku           Decimal?  @map("quantity_in_sku") @db.Decimal(14, 2)
+  stockkeepingUnit        String?   @map("stockkeeping_unit")
+  createdBy               String?   @map("created_by")
+  currency                String?   @map("currency")
+  priceUnit               Decimal?  @map("price_unit") @db.Decimal(14, 2)
+  targetQuantity          Decimal?  @map("target_quantity") @db.Decimal(14, 2)
+  openTargetQuantity      Decimal?  @map("open_target_quantity") @db.Decimal(14, 2)
+  stillToBeDeliveredQty   Decimal?  @map("still_to_be_delivered_qty") @db.Decimal(14, 2)
+  stillToBeDeliveredValue Decimal?  @map("still_to_be_delivered_value") @db.Decimal(14, 2)
+  stillToBeInvoicedQty    Decimal?  @map("still_to_be_invoiced_qty") @db.Decimal(14, 2)
+  stillToBeInvoicedVal    Decimal?  @map("still_to_be_invoiced_val") @db.Decimal(14, 2)
+  noOfPositions           Int?      @map("no_of_positions")
+  createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([purchasingDocument])
+  @@index([materialCode])
+  @@map("erp_purchase_orders")
+}
