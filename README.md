@@ -171,6 +171,41 @@ Open **two** PowerShell windows in the project folder. In the first run `npm run
 $env:API_URL="http://localhost:8091"; npm run web
 ```
 
+## Loading ERP exports (Indirect PO)
+
+Save the ERP export (`IndirectPO_Export.csv`, same columns as `data/erp_po_dump.csv`) in **`data/erp_inbox/`**, then run:
+
+```powershell
+npm run import:erp -- --dry-run   # report only: what is new, what is already there, which rows are bad
+npm run import:erp                # import every .csv in data/erp_inbox/
+```
+
+Each file is moved to `data/erp_inbox/processed/` once it has been imported; a file that fails stays in the inbox. The inbox is git-ignored, so real exports are never committed. `--file C:\path\export.csv` imports one file from anywhere.
+
+Real exports are large (the 2024-2026 file has about 49,000 lines), and the app sends every purchase order to the browser in one answer, so choose how much goes into the app pages:
+
+```powershell
+npm run import:erp -- --since 2026-01-01   # every valid line is kept raw; only lines from that date become suppliers, materials and POs
+```
+
+Without `--since` the importer refuses to load more than 25,000 POs into the app (`--force-large` overrides). The date can be moved earlier later: older lines are already in `erp_purchase_orders`, and POs that exist are skipped.
+
+It is additive and safe to run twice. Nothing is deleted:
+
+| Goes to | Rule |
+|---|---|
+| `erp_purchase_orders` | Every valid line as exported, whatever its date. Same document + item again = that row is replaced |
+| Suppliers, materials | Created when the supplier code / material code is new; existing ones are left alone |
+| Purchase orders | New ones are inserted in bulk, oldest first: price history and material prices update like a normal PO, and supplier scores are recalculated once at the end. A PO number already in the system is skipped |
+
+Unlike saving one PO in the app, the bulk import writes one audit entry for the whole file and raises **no alerts** (a backfill would flood the list with old price spikes). Run **Alerts → Scan** in the app afterwards.
+
+The export has no delivery or inspection results, so imported POs start as `PENDING` and do not affect delivery or quality scores until that data is entered. Unit price is the export's Gross Unit Price (Net Price if gross is empty). A line without a SAP material number gets a code from its material group plus a hash of its full description, so different items never merge (case, spacing and punctuation are ignored).
+
+**In the cloud** the same script runs as the Cloud Run job `asppm-import`. It reads CSVs from `$DATA_DIR/erp_inbox` (the mounted bucket `vibe-coding-510806-asppm-data`) and moves them to `processed/` when done. Update its arguments to choose a dry run or the real import.
+
+`npm run seed:erp` loads the sample file `data/erp_po_dump.csv` the same way. `scripts/import_erp_data.js` is the older one-time loader: it **wipes all business data** and rewrites `server/seed/data.json`, so do not use it for routine loads.
+
 ## Tests
 
 ```

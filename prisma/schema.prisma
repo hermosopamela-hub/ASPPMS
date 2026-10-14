@@ -262,8 +262,10 @@ model ErpPurchaseOrder {
   stillToBeInvoicedQty    Decimal?  @map("still_to_be_invoiced_qty") @db.Decimal(14, 2)
   stillToBeInvoicedVal    Decimal?  @map("still_to_be_invoiced_val") @db.Decimal(14, 2)
   noOfPositions           Int?      @map("no_of_positions")
+  sourceFile              String?   @map("source_file")
   createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
+  @@unique([purchasingDocument, item])
   @@index([purchasingDocument])
   @@index([materialCode])
   @@map("erp_purchase_orders")

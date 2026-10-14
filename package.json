@@ -13,6 +13,8 @@
     "secret": "node scripts/setup_env.js --secret-only",
     "migrate": "node scripts/migrate.js",
     "seed:demo": "node scripts/seed_demo.js",
+    "import:erp": "node scripts/import_erp.js",
+    "seed:erp": "node scripts/import_erp.js --seed",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:diff": "prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script",
@@ -28,9 +30,11 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "compression": "^1.8.2",
     "express": "^4.21.2",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
+    "papaparse": "^5.7.0",
     "pg": "^8.13.1",
     "prisma": "^7.10.0"
   },
@@ -44,7 +48,6 @@
     "esbuild": "^0.28.0",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
-    "papaparse": "^5.7.0",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "tailwindcss": "^4.3.3",

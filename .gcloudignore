@@ -11,3 +11,6 @@ docs/
 cloud-sql-proxy*
 *.log
 dist/
+
+# curl cookie jar from API testing
+cookie.txt

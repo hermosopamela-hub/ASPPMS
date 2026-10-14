@@ -16,3 +16,10 @@ coverage/
 .idea/
 .claude/
 *.tsbuildinfo
+
+# ERP exports dropped in the inbox are business data, not source code
+data/erp_inbox/*
+!data/erp_inbox/.gitkeep
+
+# curl cookie jar from API testing
+cookie.txt

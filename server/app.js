@@ -1,6 +1,7 @@
 // Builds the Express app: security headers, sign-in, the data API and the built browser app.
 const path = require('path');
 const express = require('express');
+const compression = require('compression');
 const { attach, requireAuth } = require('./middleware/auth');
 const { securityHeaders } = require('./middleware/security');
 const apiRoutes = require('./routes/api');
@@ -13,6 +14,7 @@ const app = express();
 app.set('trust proxy', 1); // behind Cloud Run's load balancer
 app.disable('x-powered-by');
 
+app.use(compression()); // /api/snapshot is tens of MB of JSON: gzip makes it roughly a tenth of that
 app.use(securityHeaders);
 // A backup restore carries the whole database; every other body is small.
 app.use('/api/system/import', express.json({ limit: '25mb' }));
